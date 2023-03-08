@@ -3,7 +3,7 @@
 const grpc = require('@grpc/grpc-js')
 const { port, protoDescriptor } = require('./server')
 
-const grpcClient = new protoDescriptor.hellopackage.GreeterService(`localhost:${port}`, grpc.credentials.createInsecure())
+const grpcClient = new protoDescriptor.mypackage.GreeterService(`localhost:${port}`, grpc.credentials.createInsecure())
 
 ;(async () => {
   const response = await new Promise((resolve, reject) => {

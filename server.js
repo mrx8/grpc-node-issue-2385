@@ -6,7 +6,7 @@ const protoLoader = require('@grpc/proto-loader')
 
 const port = 12345
 
-const protoPath = path.resolve(__dirname, 'hello.proto')
+const protoPath = path.resolve(__dirname, 'service.proto')
 const packageDefinition = protoLoader.loadSync(protoPath, {
   keepCase: true,
   defaults: false
@@ -23,7 +23,7 @@ const methodImplementations = {
 
 const startServer = async () => {
   const server = new grpc.Server()
-  server.addService(protoDescriptor.hellopackage.GreeterService.service, methodImplementations)
+  server.addService(protoDescriptor.mypackage.GreeterService.service, methodImplementations)
 
   await new Promise((resolve, reject) => {
     server.bindAsync(`0.0.0.0:${port}`, grpc.ServerCredentials.createInsecure(), err => {
