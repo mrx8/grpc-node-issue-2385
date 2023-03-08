@@ -6,22 +6,22 @@ const protoLoader = require('@grpc/proto-loader')
 
 const port = 12345
 
-;(async () => {
-  const protoPath = path.resolve(__dirname, 'hello.proto')
-  const packageDefinition = protoLoader.loadSync(protoPath, {
-    keepCase: true,
-    defaults: false
-  })
-  const protoDescriptor = grpc.loadPackageDefinition(packageDefinition)
+const protoPath = path.resolve(__dirname, 'hello.proto')
+const packageDefinition = protoLoader.loadSync(protoPath, {
+  keepCase: true,
+  defaults: false
+})
+const protoDescriptor = grpc.loadPackageDefinition(packageDefinition)
 
-  const methodImplementations = {
-    SayHello (call, callback) {
-      callback(null, {
-        message: `Hello ${call.request.name}`
-      })
-    }
+const methodImplementations = {
+  SayHello (call, callback) {
+    callback(null, {
+      message: `Hello ${call.request.name}`
+    })
   }
+}
 
+const startServer = async () => {
   const server = new grpc.Server()
   server.addService(protoDescriptor.hellopackage.GreeterService.service, methodImplementations)
 
@@ -35,7 +35,20 @@ const port = 12345
   })
   server.start()
   console.log(`Greeter service gRPC is listening on port ${port}`)
-})()
-  .catch(err => {
-    console.error(err)
-  })
+}
+
+// start server only if this module was called directly via command line
+// and not when it was required from another module
+if (require.main === module) {
+  startServer()
+    .catch(err => {
+      console.error(err)
+      process.exit(1)
+    })
+}
+
+module.exports = {
+  port,
+  protoDescriptor,
+  startServer
+}

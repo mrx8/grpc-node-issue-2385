@@ -1,17 +1,9 @@
 'use strict'
 
-const path = require('node:path')
 const grpc = require('@grpc/grpc-js')
-const protoLoader = require('@grpc/proto-loader')
+const { port, protoDescriptor } = require('./server')
 
-const protoPath = path.resolve(__dirname, 'hello.proto')
-const packageDefinition = protoLoader.loadSync(protoPath, {
-  keepCase: true,
-  defaults: false
-})
-const protoDescriptor = grpc.loadPackageDefinition(packageDefinition)
-
-const grpcClient = new protoDescriptor.hellopackage.GreeterService('0.0.0.0:12345', grpc.credentials.createInsecure())
+const grpcClient = new protoDescriptor.hellopackage.GreeterService(`localhost:${port}`, grpc.credentials.createInsecure())
 
 ;(async () => {
   const response = await new Promise((resolve, reject) => {
@@ -26,4 +18,5 @@ const grpcClient = new protoDescriptor.hellopackage.GreeterService('0.0.0.0:1234
 })()
   .catch(err => {
     console.error(err)
+    process.exit(1)
   })
