@@ -1,6 +1,7 @@
 'use strict'
 
 const path = require('node:path')
+const { Readable } = require('node:stream')
 const grpc = require('@grpc/grpc-js')
 const protoLoader = require('@grpc/proto-loader')
 
@@ -18,6 +19,17 @@ const methodImplementations = {
     callback(null, {
       message: `Hello ${call.request.name}`
     })
+  },
+
+  StreamHello (call, callback) {
+    const stream = Readable.from([
+      { message: `Hello ${call.request.name} #1` },
+      { message: `Hello ${call.request.name} #2` },
+      { message: `Hello ${call.request.name} #3` },
+      { message: `Hello ${call.request.name} #4` },
+      { message: `Hello ${call.request.name} #5` }
+    ])
+    stream.pipe(call)
   }
 }
 
