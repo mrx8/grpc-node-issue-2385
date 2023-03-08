@@ -15,21 +15,25 @@ const packageDefinition = protoLoader.loadSync(protoPath, {
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition)
 
 const methodImplementations = {
+  // unary request/response
   SayHello (call, callback) {
     callback(null, {
       message: `Hello ${call.request.name}`
     })
   },
 
-  StreamHello (call, callback) {
-    const stream = Readable.from([
+  // server streaming
+  StreamHello (call) {
+    const responseStream = Readable.from([
       { message: `Hello ${call.request.name} #1` },
       { message: `Hello ${call.request.name} #2` },
       { message: `Hello ${call.request.name} #3` },
       { message: `Hello ${call.request.name} #4` },
       { message: `Hello ${call.request.name} #5` }
     ])
-    stream.pipe(call)
+
+    // call is a writable stream
+    responseStream.pipe(call)
   }
 }
 
@@ -46,7 +50,7 @@ const startServer = async () => {
     })
   })
   server.start()
-  console.log(`Greeter service gRPC is listening on port ${port}`)
+  console.log(`Greeter service is listening on port ${port}`)
 }
 
 // start server only if this module was called directly via command line

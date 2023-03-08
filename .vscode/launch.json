@@ -16,11 +16,20 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Start Client",
+      "name": "Call SayHello",
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/client.js"
-    }
+      "program": "${workspaceFolder}/call-say-hello.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Call StreamHello",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/call-stream-hello.js"
+    },
   ]
 }
