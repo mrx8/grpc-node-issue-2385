@@ -1,9 +1,9 @@
 'use strict'
 
 const grpc = require('@grpc/grpc-js')
-const { port, protoDescriptor } = require('./server')
+const { port, grpcObject } = require('./server')
 
-const grpcClient = new protoDescriptor.mypackage.GreeterService(`localhost:${port}`, grpc.credentials.createInsecure())
+const grpcClient = new grpcObject.mypackage.GreeterService(`localhost:${port}`, grpc.credentials.createInsecure())
 
 ;(async () => {
   const stream = grpcClient.StreamHello({ name: 'World' })

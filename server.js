@@ -12,7 +12,7 @@ const packageDefinition = protoLoader.loadSync(protoPath, {
   keepCase: true,
   defaults: false
 })
-const protoDescriptor = grpc.loadPackageDefinition(packageDefinition)
+const grpcObject = grpc.loadPackageDefinition(packageDefinition)
 
 const methodImplementations = {
   // unary request/response
@@ -39,7 +39,7 @@ const methodImplementations = {
 
 const startServer = async () => {
   const server = new grpc.Server()
-  server.addService(protoDescriptor.mypackage.GreeterService.service, methodImplementations)
+  server.addService(grpcObject.mypackage.GreeterService.service, methodImplementations)
 
   await new Promise((resolve, reject) => {
     server.bindAsync(`0.0.0.0:${port}`, grpc.ServerCredentials.createInsecure(), err => {
@@ -65,6 +65,6 @@ if (require.main === module) {
 
 module.exports = {
   port,
-  protoDescriptor,
+  grpcObject,
   startServer
 }
