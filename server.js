@@ -1,9 +1,10 @@
 'use strict'
 
 const path = require('node:path')
-const { Readable } = require('node:stream')
 const grpc = require('@grpc/grpc-js')
 const protoLoader = require('@grpc/proto-loader')
+const { setTimeout: sleep } = require('node:timers/promises')
+const { compose } = require('node:stream')
 
 const port = 12345
 
@@ -14,23 +15,34 @@ const packageDefinition = protoLoader.loadSync(protoPath, {
 })
 const grpcObject = grpc.loadPackageDefinition(packageDefinition)
 
-const methodImplementations = {
-  // unary request/response
-  SayHello (call, callback) {
-    callback(null, {
-      message: `Hello ${call.request.name}`
-    })
-  },
+async function * generateMessages () {
+  let i = 100000
+  while (i-- > 0) {
+    await sleep(10) // eslint-disable-line no-await-in-loop
+    yield {
+      message: i.toString()
+    }
+  }
+}
 
+async function * passthrough (iterator) {
+  console.log('before passthrough')
+  for await (const item of iterator) {
+    console.log('before', item)
+    yield item
+    console.log('after', item)
+  }
+  console.log('after passthrough')
+}
+
+const methodImplementations = {
   // server streaming
   StreamHello (call) {
-    const responseStream = Readable.from([
-      { message: `Hello ${call.request.name} #1` },
-      { message: `Hello ${call.request.name} #2` },
-      { message: `Hello ${call.request.name} #3` },
-      { message: `Hello ${call.request.name} #4` },
-      { message: `Hello ${call.request.name} #5` }
-    ])
+    const responseStream = compose(generateMessages, passthrough)
+
+    call.on('cancelled', () => {
+      console.log('cancelled')
+    })
 
     // call is a writable stream
     responseStream.pipe(call)

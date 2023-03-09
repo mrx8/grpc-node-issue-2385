@@ -11,9 +11,6 @@ message HelloReply {
 }
 
 service GreeterService {
-  // unary request/response
-  rpc SayHello (HelloRequest) returns (HelloReply) {}
-
   // server streaming
   rpc StreamHello (HelloRequest) returns (stream HelloReply) {}
 }
